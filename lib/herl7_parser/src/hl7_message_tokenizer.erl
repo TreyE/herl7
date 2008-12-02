@@ -1,10 +1,10 @@
--module(hl7_message_parser).
+-module(hl7_message_tokenizer).
 
--export([parse/1]).
+-export([tokenize/1]).
 
 -include("hl7_records.hrl").
 
-parse(String) -> tokenize_it(String, parse_msh(String), []).
+tokenize(String) -> tokenize_it(String, parse_msh(String), []).
 
 
 parse_msh([$M, $S, $H, FieldSep, CompSep, FRepeat, EscChar, SCSep|_Rest]) ->
