@@ -16,6 +16,7 @@ fields -> part_content field_separator fields : lists:append([{field, '$1'}], '$
 
 
 % Vanilla Content
+part_content -> '$empty' : nil.
 part_content -> vals : '$1'.
 
 vals -> val : ['$1'].
