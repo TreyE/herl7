@@ -6,7 +6,8 @@
    {modules, [herl7_parser_app,
               herl7_parser_sup,
               hl7_message_parser,
-              hl7_message_tokenizer
+              hl7_message_tokenizer,
+              hl7_message
    ]},
    {registered,[herl7_parser_sup]},
    {applications, [kernel, stdlib]},
