@@ -5,6 +5,7 @@
    {vsn, "0.1.0"},
    {modules, [herl7_parser_app,
               herl7_parser_sup,
+              hl7_message_parser,
               hl7_message_tokenizer
    ]},
    {registered,[herl7_parser_sup]},
