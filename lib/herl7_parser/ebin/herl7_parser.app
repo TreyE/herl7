@@ -8,7 +8,10 @@
               hl7_message_parser,
               hl7_message_tokenizer,
               hl7_message,
-              hl7_field
+              hl7_field,
+              hl7_component,
+              hl7_subcomponent,
+              hl7_serializer_utils
    ]},
    {registered,[herl7_parser_sup]},
    {applications, [kernel, stdlib]},
