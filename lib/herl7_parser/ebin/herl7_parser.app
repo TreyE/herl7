@@ -11,6 +11,7 @@
               hl7_field,
               hl7_component,
               hl7_subcomponent,
+              hl7_segment,
               hl7_serializer_utils,
               hl7_message_properties
    ]},

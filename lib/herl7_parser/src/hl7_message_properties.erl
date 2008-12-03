@@ -8,13 +8,15 @@
 -module(hl7_message_properties).
 
 %% API
--export([escape_character/1, field_separator/1, component_separator/1, field_repeat_separator/1, subcomponent_separator/1]).
+-export([escape_character/1, field_separator/1, component_separator/1, field_repeat_separator/1, subcomponent_separator/1, new/0]).
 
 -include("hl7_records.hrl").
 
 %%====================================================================
 %% API
 %%====================================================================
+
+new() -> #hl7r_message_properties{}.
 
 escape_character(MPRec) when is_record(MPRec, hl7r_message_properties) ->
     MPRec#hl7r_message_properties.escape_character.
