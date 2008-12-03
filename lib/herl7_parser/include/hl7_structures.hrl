@@ -25,3 +25,5 @@
 -record(hl7r_message, {
 	  segments = []
 	 }).
+
+-define(E_CHAR(A), hl7_message_properties:escape_character(A)).

@@ -27,7 +27,7 @@ parse_msh([$M, $S, $H, FieldSep, CompSep, FRepeat, EscChar, SCSep|Rest]) ->
     ?B_TOK(EscChar),
     ?B_TOK(SCSep)
   ],
-  MProps = #hl7_message_properties{
+  MProps = #hl7r_message_properties{
     field_separator = FieldSep,
     component_separator = CompSep,
     subcomponent_separator = SCSep,
@@ -39,11 +39,11 @@ parse_msh([$M, $S, $H, FieldSep, CompSep, FRepeat, EscChar, SCSep|Rest]) ->
 tokenize_it([$\r], _MsgPropts, Tokens) ->
   lists:append(Tokens, [{segment_terminator, 1}]);
 tokenize_it([A, B|Rest], MsgPropts, Tokens) ->
-  EChar = MsgPropts#hl7_message_properties.escape_character,
-  FChar = MsgPropts#hl7_message_properties.field_separator,
-  CChar = MsgPropts#hl7_message_properties.component_separator,
-  SCChar = MsgPropts#hl7_message_properties.subcomponent_separator,
-  FRChar = MsgPropts#hl7_message_properties.field_repeat_separator,
+  EChar = hl7_message_properties:escape_character(MsgPropts),
+  FChar = hl7_message_properties:field_separator(MsgPropts),
+  CChar = hl7_message_properties:component_separator(MsgPropts),
+  SCChar = hl7_message_properties:subcomponent_separator(MsgPropts),
+  FRChar = hl7_message_properties:field_repeat_separator(MsgPropts),
   case ({A, B}) of
   {EChar,Char} -> tokenize_it(Rest, MsgPropts, lists:append(Tokens, [?B_TOK(Char)]));
   {$\r,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?ST_TOK]));
