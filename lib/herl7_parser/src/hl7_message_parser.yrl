@@ -31,7 +31,7 @@ subcomponents -> part_content subcomponent_separator subcomponents : append_subc
 
 % Vanilla Content
 part_content -> '$empty' : nil.
-part_content -> vals : '$1'.
+part_content -> vals : create_part_content('$1').
 
 vals -> val : ['$1'].
 vals -> val vals : lists:append(['$1'], '$2').
@@ -91,3 +91,12 @@ create_message(A) ->
   #hl7r_message{
     segments = A
   }.
+
+create_part_content(A) ->
+  MFun = fun(X) ->
+    element(2, X)
+  end,
+  case lists:any(fun erlang:is_atom/1, A) of
+    true -> A;
+    _ -> list_to_binary(lists:map(MFun, A))
+  end.

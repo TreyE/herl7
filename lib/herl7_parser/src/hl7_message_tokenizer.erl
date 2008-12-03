@@ -4,17 +4,37 @@
 
 -include("hl7_records.hrl").
 
-tokenize(String) -> tokenize_it(String, parse_msh(String), []).
+-define(FS_TOK, {field_separator, 1}).
+-define(CS_TOK, {component_separator, 1}).
+-define(FR_TOK, {field_repeat_separator, 1}).
+-define(SCS_TOK, {subcomponent_separator, 1}).
+-define(ST_TOK, {segment_terminator, 1}).
+-define(B_TOK(A), {byte, 1, A}).
+
+tokenize(String) -> 
+  {MProps, Tokens, Rest} = parse_msh(String),   
+  tokenize_it(Rest, MProps, Tokens).
 
 
-parse_msh([$M, $S, $H, FieldSep, CompSep, FRepeat, EscChar, SCSep|_Rest]) ->
-  #hl7_message_properties{
+parse_msh([$M, $S, $H, FieldSep, CompSep, FRepeat, EscChar, SCSep|Rest]) ->
+  Tokens = [
+    ?B_TOK($M),
+    ?B_TOK($S),
+    ?B_TOK($H),
+    ?FS_TOK,
+    ?B_TOK(CompSep),
+    ?B_TOK(FRepeat),
+    ?B_TOK(EscChar),
+    ?B_TOK(SCSep)
+  ],
+  MProps = #hl7_message_properties{
     field_separator = FieldSep,
     component_separator = CompSep,
     subcomponent_separator = SCSep,
     escape_character = EscChar,
     field_repeat_separator = FRepeat
-  }.
+  },
+  {MProps, Tokens, Rest}.
 
 tokenize_it([$\r], _MsgPropts, Tokens) ->
   lists:append(Tokens, [{segment_terminator, 1}]);
@@ -25,11 +45,11 @@ tokenize_it([A, B|Rest], MsgPropts, Tokens) ->
   SCChar = MsgPropts#hl7_message_properties.subcomponent_separator,
   FRChar = MsgPropts#hl7_message_properties.field_repeat_separator,
   case ({A, B}) of
-  {EChar,Char} -> tokenize_it(Rest, MsgPropts, lists:append(Tokens, [{byte, 1, Char}]));
-  {$\r,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [{segment_terminator, 1}]));
-  {FChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [{field_separator, 1}]));
-  {CChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [{component_separator, 1}]));
-  {SCChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [{subcomponent_separator, 1}]));
-  {FRChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [{field_repeat_separator, 1}]));
-  {CharA,CharB} -> tokenize_it([CharB|Rest], MsgPropts, lists:append(Tokens, [{byte, 1, CharA}]))
+  {EChar,Char} -> tokenize_it(Rest, MsgPropts, lists:append(Tokens, [?B_TOK(Char)]));
+  {$\r,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?ST_TOK]));
+  {FChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?FS_TOK]));
+  {CChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?CS_TOK]));
+  {SCChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?SCS_TOK]));
+  {FRChar,Char} -> tokenize_it([Char|Rest], MsgPropts, lists:append(Tokens, [?FR_TOK]));
+  {CharA,CharB} -> tokenize_it([CharB|Rest], MsgPropts, lists:append(Tokens, [?B_TOK(CharA)]))
   end.
