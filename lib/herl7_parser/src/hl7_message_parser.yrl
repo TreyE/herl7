@@ -36,10 +36,6 @@ part_content -> vals : create_part_content('$1').
 vals -> val : ['$1'].
 vals -> val vals : lists:append(['$1'], '$2').
 val -> byte : byte_value('$1').
-val -> component_separator : component_separator.
-val -> subcomponent_separator : subcomponent_separator.
-val -> field_repeat_separator : field_repeat_separator.
-
 
 Erlang code.
 -include("hl7_structures.hrl").
@@ -96,7 +92,4 @@ create_part_content(A) ->
   MFun = fun(X) ->
     element(2, X)
   end,
-  case lists:any(fun erlang:is_atom/1, A) of
-    true -> A;
-    _ -> list_to_binary(lists:map(MFun, A))
-  end.
+  list_to_binary(lists:map(MFun, A)).

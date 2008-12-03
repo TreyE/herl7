@@ -23,10 +23,14 @@ parse_example_message() ->
     {ok, ParsedMessage} = parse_message(Msg),
     ParsedMessage.    
 
-segment_field(X, Y, Msg) ->
-      Segment = lists:nth(X, segments(Msg)),
-      lists:nth(Y, Segment#hl7r_segment.fields).
+segment_field(S, F, Msg) ->
+      Segment = lists:nth(S, segments(Msg)),
+      lists:nth(F, Segment#hl7r_segment.fields).
 
+segment_field_component(S, F, Comp, Msg) ->
+      Segment = lists:nth(S, segments(Msg)),
+      Field = lists:nth(F, Segment#hl7r_segment.fields),
+      lists:nth(Comp, Field#hl7r_component_field.components).
 
 message_record_test() ->
     ParsedMessage = parse_example_message(),
@@ -41,5 +45,10 @@ message_header_tag_test() ->
         ParsedMessage = parse_example_message(),
         FirstField = segment_field(1, 1, ParsedMessage),
         <<"MSH">> = FirstField#hl7r_content_field.content.
-         
+
+message_component_test() ->
+        ParsedMessage = parse_example_message(),
+        ExpectedComponent = segment_field_component(1, 9, 2, ParsedMessage),
+        <<"A01">> = ExpectedComponent#hl7r_content_component.content.
+ 
 -endif.
