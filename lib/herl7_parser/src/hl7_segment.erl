@@ -1,6 +1,6 @@
 -module(hl7_segment).
 
--export([serialize/2, new/2]).
+-export([serialize/2, new/2, field_value/2]).
 
 -include("hl7_structures.hrl").
 
@@ -11,6 +11,13 @@ new(SID, Lst) ->
       segment_id = SID,
       fields = Lst
     }.
+
+field_value(N, Segment) when is_record(Segment, hl7r_segment) ->
+  Fields = Segment#hl7r_segment.fields,
+  case (N > length(Fields)) of
+    false -> hl7_field:value(lists:nth(N, Fields));
+    true -> nil
+  end.
 
 serialize(Segment, MProps) when is_record(Segment, hl7r_segment) ->
      FDelim = hl7_message_properties:field_separator(MProps),

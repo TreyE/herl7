@@ -1,6 +1,6 @@
 -module(hl7_field).
 
--export([serialize/2, new_content/1, new_components/1, new_empty/0]).
+-export([serialize/2, new_content/1, new_components/1, new_empty/0, value/1]).
 
 -include("hl7_structures.hrl").
 
@@ -16,6 +16,10 @@ new_components(Lst) ->
     #hl7r_component_field{
       components = Lst
     }.
+
+value(Field) when is_record(Field, hl7r_content_field) -> Field#hl7r_content_field.content;
+value(Field) when is_record(Field, hl7r_component_field) -> Field#hl7r_component_field.components.
+
 
 serialize(Field, MProps) when is_record(Field, hl7r_content_field) ->
   FSep = hl7_message_properties:field_separator(MProps),
