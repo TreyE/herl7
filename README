@@ -1,0 +1,12 @@
+===== HErl7 =====
+(C) 2008-2009 Lewis R. Evans IV
+
+A simple HL7 parser for erlang.
+
+It's important to note that the Erlang part of this uses Erlware.org's Sinan,
+so if you want to be able to build/install it, you will need Faxien and Sinan
+installed.
+
+=== What does this software do? ===
+
+This software provides a simple HL7 parser/serializer for erlang.
