@@ -8,13 +8,23 @@
 -module(hl7_message_properties).
 
 %% API
--export([escape_character/1, field_separator/1, component_separator/1, field_repeat_separator/1, subcomponent_separator/1, new/0]).
+-export([escape_character/1, field_separator/1, component_separator/1, field_repeat_separator/1, subcomponent_separator/1, new/0, new/5]).
 
 -include("hl7_records.hrl").
 
 %%====================================================================
 %% API
 %%====================================================================
+
+new(FSep, CSep, SCSep, FRSep, EChar) ->
+    #hl7r_message_properties{
+       field_separator = FSep,
+       component_separator = CSep,
+       subcomponent_separator = SCSep,
+       field_repeat_separator = FRSep,
+       escape_character = EChar
+    }.
+
 
 new() -> #hl7r_message_properties{}.
 

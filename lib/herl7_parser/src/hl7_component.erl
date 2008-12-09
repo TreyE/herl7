@@ -1,8 +1,22 @@
 -module(hl7_component).
 
--export([serialize/2]).
+-export([serialize/2, new_empty/0, new_subcomponent/1, new_content/1]).
 
 -include("hl7_structures.hrl").
+
+
+new_empty() ->
+    new_content(nil).
+
+new_content(Content) ->
+    #hl7r_content_component{
+      content = Content
+    }.
+
+new_subcomponent(SubComponents) ->
+    #hl7r_subcomponent_component{
+      subcomponents = SubComponents
+    }.
 
 serialize(Component, MProps) when is_record(Component, hl7r_content_component) ->
     EscChar = ?E_CHAR(MProps),
@@ -15,7 +29,7 @@ serialize(Component, MProps) when is_record(Component, hl7r_subcomponent_compone
 
 subcomponent_serializer(MProps) ->
     fun(SC) ->
-	    serialize_subcomponent(SC, MProps)
+            serialize_subcomponent(SC, MProps)
     end.
 
 serialize_subcomponent(SubComponent, MProps) ->

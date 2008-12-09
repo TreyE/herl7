@@ -1,12 +1,17 @@
 -module(hl7_message).
 
--export([parse_message/1, segments/1, serialize/2]).
+-export([parse_message/1, segments/1, serialize/2, new/1]).
 
 -include("hl7_structures.hrl").
 
 -ifdef(testing).
 -include("eunit.hrl").
 -endif.
+
+new(Lst) ->
+    #hl7r_message{
+      segments = Lst
+    }.
 
 parse_message(String) ->
     hl7_message_parser:parse(hl7_message_tokenizer:tokenize(String)).
@@ -16,7 +21,7 @@ segments(Message) when is_record(Message, hl7r_message) ->
     Segs.
 
 serialize(Message, MessageProperties) when is_record(Message, hl7r_message) ->
-    SegSerializer = fun(X, Acc) -> 
+    SegSerializer = fun(X, Acc) ->
       lists:append(
         Acc,
         binary_to_list(hl7_segment:serialize(X, MessageProperties))
@@ -27,7 +32,7 @@ serialize(Message, MessageProperties) when is_record(Message, hl7r_message) ->
 cleanup_msh(Msg) ->
   {Hd, Tail} = lists:split(6, Msg),
   list_to_binary(lists:append(Hd, tl(Tail))).
-    
+
 
 -ifdef(testing).
 -define(EX_MSG, "MSH|^~\\&|AccMgr|1|||20050110045504||ADT^A01|599102|P|2.3|||\rEVN|A01|20050110045502|||||\r").
@@ -35,7 +40,7 @@ cleanup_msh(Msg) ->
 parse_example_message() ->
     Msg = ?EX_MSG,
     {ok, ParsedMessage} = parse_message(Msg),
-    ParsedMessage.    
+    ParsedMessage.
 
 segment_field(S, F, Msg) ->
       Segment = lists:nth(S, segments(Msg)),
@@ -68,5 +73,34 @@ message_component_test() ->
 serialize_test() ->
         ParsedMessage = parse_example_message(),
         SerializeOutput = binary_to_list(serialize(ParsedMessage, hl7_message_properties:new())),
-        SerializeOutput = ?EX_MSG. 
+        SerializeOutput = ?EX_MSG.
+
+create_message_test() ->
+  ExpectedValue = "MSH|^~\\&|AccMgr|1|||20050110045504||ADT^A01|599102|P|2.3|||\r",
+    MessageProps = hl7_message_properties:new(),
+    Fields = [
+      hl7_field:new_content(<<"MSH">>),
+      hl7_field:new_content(<<"^~\\&">>),
+      hl7_field:new_content(<<"AccMgr">>),
+      hl7_field:new_content(<<"1">>),
+      hl7_field:new_empty(),
+      hl7_field:new_empty(),
+      hl7_field:new_content(<<"20050110045504">>),
+      hl7_field:new_empty(),
+      hl7_field:new_components(
+       [
+         hl7_component:new_content(<<"ADT">>),
+         hl7_component:new_content(<<"A01">>)
+      ]),
+      hl7_field:new_content(<<"599102">>),
+      hl7_field:new_content(<<"P">>),
+      hl7_field:new_content(<<"2.3">>),
+      hl7_field:new_empty(),
+      hl7_field:new_empty(),
+      hl7_field:new_empty()
+    ],
+    ParsedMessage = hl7_message:new( [ hl7_segment:new(Fields) ] ),
+    SMsg = binary_to_list(serialize(ParsedMessage, MessageProps)),
+    ExpectedValue = SMsg.
+
 -endif.

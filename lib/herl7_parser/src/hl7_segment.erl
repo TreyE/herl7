@@ -1,10 +1,15 @@
 -module(hl7_segment).
 
--export([serialize/2]).
+-export([serialize/2, new/1]).
 
 -include("hl7_structures.hrl").
 
 -define(S_DELIMITER, $\r).
+
+new(Lst) ->
+    #hl7r_segment{
+      fields = Lst
+    }.
 
 serialize(Segment, MProps) when is_record(Segment, hl7r_segment) ->
      FDelim = hl7_message_properties:field_separator(MProps),
@@ -16,7 +21,7 @@ add_segment_delimiter(SegBin) ->
 
 field_serializer(MProps) ->
     fun(Field) ->
-	    serialize_field(Field, MProps)
+            serialize_field(Field, MProps)
     end.
 
 serialize_field(Field, MProps) ->
