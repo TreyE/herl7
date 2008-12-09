@@ -53,7 +53,7 @@ create_subcomponents(A, B) ->
   }
   ].
 
-append_subcomponents(A, B) ->  
+append_subcomponents(A, B) ->
   [#hl7r_subcomponent{
     content = A
   }, B].
@@ -79,7 +79,9 @@ create_component_field(A) ->
   }.
 
 create_segment(A) ->
+  SIDField = lists:nth(1, A),
   #hl7r_segment{
+    segment_id = SIDField#hl7r_content_field.content,
     fields = A
   }.
 

@@ -27,12 +27,7 @@ serialize(Message, MessageProperties) when is_record(Message, hl7r_message) ->
         binary_to_list(hl7_segment:serialize(X, MessageProperties))
       )
     end,
-    cleanup_msh(lists:foldl(SegSerializer, [], Message#hl7r_message.segments)).
-
-cleanup_msh(Msg) ->
-  {Hd, Tail} = lists:split(6, Msg),
-  list_to_binary(lists:append(Hd, tl(Tail))).
-
+    list_to_binary(lists:foldl(SegSerializer, [], Message#hl7r_message.segments)).
 
 -ifdef(testing).
 -define(EX_MSG, "MSH|^~\\&|AccMgr|1|||20050110045504||ADT^A01|599102|P|2.3|||\rEVN|A01|20050110045502|||||\r").
@@ -99,7 +94,7 @@ create_message_test() ->
       hl7_field:new_empty(),
       hl7_field:new_empty()
     ],
-    ParsedMessage = hl7_message:new( [ hl7_segment:new(Fields) ] ),
+    ParsedMessage = hl7_message:new([ hl7_segment:new(<<"MSH">>, Fields) ] ),
     SMsg = binary_to_list(serialize(ParsedMessage, MessageProps)),
     ExpectedValue = SMsg.
 
